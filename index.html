@@ -6,21 +6,29 @@
 <title>APES Jeopardy</title>
 <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
+
 <h1>APES Jeopardy</h1>
 
-<div id="scores">
-  <div>Team 1: <span id="score1">0</span></div>
-  <div>Team 2: <span id="score2">0</span></div>
-</div>
-
-<div id="controls">
+<!-- SCOREBOARD (RESTORED) -->
+<div id="scoreboard">
+  <h3>Scoreboard</h3>
+  <p>Team 1: <span id="score1">0</span></p>
+  <p>Team 2: <span id="score2">0</span></p>
   <button onclick="resetGame()">Reset Game</button>
-  <button onclick="showFinalJeopardy()">Final Jeopardy</button>
 </div>
 
-<div id="board"></div>
+<!-- UNIT SELECT SCREEN -->
+<div id="startScreen">
+  <h2>Select a Unit</h2>
+  <div id="unitButtons"></div>
+</div>
 
+<!-- GAME BOARD -->
+<div id="board" class="hidden"></div>
+
+<!-- MODAL -->
 <div id="modal" class="hidden">
   <div class="modal-content">
     <h2 id="questionValue"></h2>
@@ -36,11 +44,13 @@
       <button onclick="adjustScore(2,-currentValue)">Team 2 -</button>
     </div>
 
-    <button onclick="closeModal()">Back to Board</button>
+    <button onclick="closeModal()">Back</button>
   </div>
 </div>
 
+<!-- SCRIPTS (IMPORTANT ORDER) -->
 <script src="questions.js"></script>
 <script src="script.js"></script>
+
 </body>
 </html>
