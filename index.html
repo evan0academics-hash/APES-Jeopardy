@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APES Jeopardy</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h1>APES Jeopardy</h1>
+
+<div id="scores">
+  <div>Team 1: <span id="score1">0</span></div>
+  <div>Team 2: <span id="score2">0</span></div>
+</div>
+
+<div id="controls">
+  <button onclick="resetGame()">Reset Game</button>
+  <button onclick="showFinalJeopardy()">Final Jeopardy</button>
+</div>
+
+<div id="board"></div>
+
+<div id="modal" class="hidden">
+  <div class="modal-content">
+    <h2 id="questionValue"></h2>
+    <p id="questionText"></p>
+    <p id="answerText" class="hidden"></p>
+
+    <button onclick="revealAnswer()">Reveal Answer</button>
+
+    <div id="scoreButtons" class="hidden">
+      <button onclick="adjustScore(1,currentValue)">Team 1 +</button>
+      <button onclick="adjustScore(1,-currentValue)">Team 1 -</button>
+      <button onclick="adjustScore(2,currentValue)">Team 2 +</button>
+      <button onclick="adjustScore(2,-currentValue)">Team 2 -</button>
+    </div>
+
+    <button onclick="closeModal()">Back to Board</button>
+  </div>
+</div>
+
+<script src="questions.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+body{font-family:Arial,sans-serif;text-align:center;margin:20px}
+#board{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.category{font-weight:bold;padding:10px;background:#ddd}
+.tile{padding:18px;border:1px solid #333;cursor:pointer}
+.used{visibility:hidden}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;justify-content:center;align-items:center}
+.hidden{display:none!important}
+.modal-content{background:white;padding:20px;max-width:700px;width:80%}
+button{margin:5px;padding:8px 12px}
