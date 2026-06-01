@@ -1,48 +1,189 @@
-let score1=0,score2=0,currentValue=0,currentTile=null;
 
-const board=document.getElementById('board');
+console.log("SCRIPT LOADED");
 
-Object.keys(gameData).forEach(cat=>{
- const h=document.createElement('div');
- h.className='category';
- h.textContent=cat;
- board.appendChild(h);
-});
+let score1 = 0;
+let score2 = 0;
 
-for(let row=0;row<5;row++){
- Object.keys(gameData).forEach(cat=>{
-  const q=gameData[cat][row];
-  const tile=document.createElement('div');
-  tile.className='tile';
-  tile.textContent=q.value;
-  tile.onclick=()=>openQuestion(q,tile);
-  board.appendChild(tile);
- });
+let currentValue = 0;
+let currentTile = null;
+let answered = false;
+
+/* =========================
+   ELEMENTS
+========================= */
+const board = document.getElementById("board");
+const startScreen = document.getElementById("startScreen");
+const unitButtons = document.getElementById("unitButtons");
+const modal = document.getElementById("modal");
+
+const score1El = document.getElementById("score1");
+const score2El = document.getElementById("score2");
+
+/* =========================
+   MENU
+========================= */
+function buildMenu() {
+  unitButtons.innerHTML = "";
+
+  const data = window.gameData;
+
+  if (!data || Object.keys(data).length === 0) {
+    unitButtons.innerHTML = "<p style='color:red'>Loading units...</p>";
+    return;
+  }
+
+  Object.keys(data).forEach(unit => {
+    const btn = document.createElement("button");
+    btn.className = "unit-btn";
+    btn.textContent = unit;
+
+    btn.onclick = () => startGame(unit);
+
+    unitButtons.appendChild(btn);
+  });
 }
 
-function openQuestion(q,tile){
- currentValue=q.value;
- currentTile=tile;
- document.getElementById('questionValue').textContent=q.value;
- document.getElementById('questionText').textContent=q.question;
- document.getElementById('answerText').textContent=q.answer;
- document.getElementById('answerText').classList.add('hidden');
- document.getElementById('scoreButtons').classList.add('hidden');
- document.getElementById('modal').classList.remove('hidden');
+/* =========================
+   SAFE LOAD (fixes missing units)
+========================= */
+function waitForGameData(){
+  if (window.gameData && Object.keys(window.gameData).length > 0) {
+    buildMenu();
+  } else {
+    setTimeout(waitForGameData, 50);
+  }
 }
+
+waitForGameData();
+
+/* =========================
+   START GAME
+========================= */
+function startGame(unit){
+  startScreen.classList.add("hidden");
+  board.classList.remove("hidden");
+
+  buildBoard(unit);
+}
+
+/* =========================
+   FIXED BOARD (NO MORE SHIFTING)
+========================= */
+function buildBoard(unit){
+
+  const data = window.gameData?.[unit];
+  if (!data) return;
+
+  board.innerHTML = "";
+
+  const categories = Object.keys(data);
+
+  const grid = document.createElement("div");
+grid.className = "jeopardy-grid";
+  grid.style.display = "grid";
+  grid.style.gridTemplateColumns = `repeat(${categories.length}, 1fr)`;
+  grid.style.gap = "10px";
+
+  /* =========================
+     CATEGORY HEADER ROW
+  ========================= */
+  categories.forEach(cat => {
+    const header = document.createElement("div");
+    header.className = "category";
+    header.textContent = cat;
+    grid.appendChild(header);
+  });
+
+  /* =========================
+     QUESTION ROWS (100–500)
+  ========================= */
+  for (let row = 0; row < 5; row++) {
+    categories.forEach(cat => {
+
+      const q = data[cat]?.[row];
+
+      const tile = document.createElement("div");
+      tile.className = "tile";
+
+      tile.textContent = q ? q.value : "";
+
+      tile.onclick = () => {
+        if (!q || tile.classList.contains("used")) return;
+        openQuestion(q, tile);
+      };
+
+      grid.appendChild(tile);
+    });
+  }
+
+  board.appendChild(grid);
+}
+
+/* =========================
+   OPEN QUESTION
+========================= */
+function openQuestion(q, tile){
+  currentValue = q.value;
+  currentTile = tile;
+  answered = false;
+
+  document.getElementById("questionValue").textContent = q.value;
+  document.getElementById("questionText").textContent = q.question;
+  document.getElementById("answerText").textContent = q.answer;
+
+  document.getElementById("answerText").classList.add("hidden");
+  document.getElementById("scoreButtons").classList.add("hidden");
+
+  modal.classList.remove("hidden");
+}
+
+/* =========================
+   REVEAL ANSWER
+========================= */
 function revealAnswer(){
- document.getElementById('answerText').classList.remove('hidden');
- document.getElementById('scoreButtons').classList.remove('hidden');
+  answered = true;
+
+  document.getElementById("answerText").classList.remove("hidden");
+  document.getElementById("scoreButtons").classList.remove("hidden");
 }
+
+/* =========================
+   CLOSE MODAL
+========================= */
 function closeModal(){
- document.getElementById('modal').classList.add('hidden');
- if(currentTile) currentTile.classList.add('used');
+
+  modal.classList.add("hidden");
+
+  if (answered && currentTile) {
+    currentTile.classList.add("used");
+    currentTile.style.pointerEvents = "none";
+    currentTile.textContent = "";
+  }
+
+  currentTile = null;
+  currentValue = 0;
+  answered = false;
 }
-function adjustScore(team,val){
- if(team===1){score1+=val;document.getElementById('score1').textContent=score1;}
- else{score2+=val;document.getElementById('score2').textContent=score2;}
+
+/* =========================
+   SCORE (AUTO CLOSE)
+========================= */
+function adjustScore(team, val){
+
+  if (team === 1) {
+    score1 += val;
+    score1El.textContent = score1;
+  } else {
+    score2 += val;
+    score2El.textContent = score2;
+  }
+
+  closeModal();
 }
-function resetGame(){location.reload();}
-function showFinalJeopardy(){
- openQuestion({value:'Final Jeopardy',question:finalJeopardy.question,answer:finalJeopardy.answer},null);
+
+/* =========================
+   RESET
+========================= */
+function resetGame(){
+  location.reload();
 }
